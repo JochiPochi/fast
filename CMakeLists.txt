@@ -10,8 +10,6 @@ ELSE()
   SET(IS_ARM FALSE)
 ENDIF()
 
-SET(BUILD_TEST TRUE)
-
 #######################################
 SET(PROJECT_NAME fast)
 PROJECT(${PROJECT_NAME})
@@ -39,18 +37,23 @@ ELSE()
 ENDIF()
 
 # Add library
-INCLUDE_DIRECTORIES(SYSTEM include src)
+INCLUDE_DIRECTORIES(
+SYSTEM
+include
+src
+)
 ADD_LIBRARY(${PROJECT_NAME} SHARED ${SOURCES})
 
-# Add Tests
-IF(BUILD_TEST)
   MESSAGE("Building Fast Test")
-  FIND_PACKAGE(OpenCV REQUIRED)
-  INCLUDE_DIRECTORIES(${OpenCV_INCLUDE_DIRS})
+FIND_PACKAGE(OpenCV REQUIRED)
+FIND_PACKAGE(Boost REQUIRED COMPONENTS system)
+INCLUDE_DIRECTORIES(
+  ${OpenCV_INCLUDE_DIRS}
+  ${Boost_INCLUDE_DIRS}
+)
   ADD_DEFINITIONS(-DTEST_DATA_DIR=\"${PROJECT_SOURCE_DIR}/test/data\")
   ADD_EXECUTABLE(fast_test test/test.cpp)
   TARGET_LINK_LIBRARIES(fast_test ${OpenCV_LIBS} ${PROJECT_NAME})
-ENDIF()
 
 
 ################################################################################
