@@ -3,12 +3,6 @@
 
 # Based on the ARM_ARCHITECTURE environment variable
 # Set IS_ARM to build on the Odroid board
-IF(DEFINED ENV{ARM_ARCHITECTURE})
-  MESSAGE("ARM_ARCHITECTURE environment variable set to " $ENV{ARM_ARCHITECTURE})
-  SET(IS_ARM TRUE)
-ELSE()
-  SET(IS_ARM FALSE)
-ENDIF()
 
 #######################################
 SET(PROJECT_NAME fast)
@@ -18,33 +12,31 @@ SET(CMAKE_VERBOSE_MAKEFILE ON)
 
 # Build type and flags
 SET(CMAKE_BUILD_TYPE Release) # Options:  Debug, RelWithDebInfo, Release
-SET(CMAKE_CXX_FLAGS "-Wall -Werror -Wno-unused-variable -Wno-unused-but-set-variable -Wno-unknown-pragmas")
+SET(CMAKE_CXX_FLAGS "--sysroot=/home/jaleman/xflyer-cyphy/v01.00.02/komatsu-demo/tmp/sysroots/intel-aero -Wall -Werror -Wno-unused-variable -Wno-unused-but-set-variable -Wno-unknown-pragmas")
 SET(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS} -O0 -g")
-IF(IS_ARM)
-  SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS} -O3 -mfpu=neon -march=armv7-a")
-ELSE()
   SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS} -O3 -mmmx -msse -msse -msse2 -msse3 -mssse3 -fomit-frame-pointer")
-ENDIF()
-
 # Add Sources
 SET(SOURCES  ${PROJECT_SOURCE_DIR}/src/fast_10.cpp
              ${PROJECT_SOURCE_DIR}/src/fast_10_score.cpp
              ${PROJECT_SOURCE_DIR}/src/nonmax_3x3.cpp)
-IF(IS_ARM)
-#  LIST(APPEND SOURCES ${PROJECT_SOURCE_DIR}/src/faster_corner_9_neon.cpp)
-ELSE()
-  LIST(APPEND SOURCES ${PROJECT_SOURCE_DIR}/src/faster_corner_10_sse.cpp)
-ENDIF()
+LIST(APPEND SOURCES ${PROJECT_SOURCE_DIR}/src/faster_corner_10_sse.cpp)
+
+#set(MYSYSROOT /home/jaleman/xflyer-cyphy/v01.00.02/komatsu-demo/tmp/sysroots/intel-aero)
+#include_directories(
+#  /home/jaleman/xflyer-cyphy/v01.00.02/komatsu-demo/tmp/sysroots/intel-aero/c++/5.3.0
+#  /home/jaleman/xflyer-cyphy/v01.00.02/komatsu-demo/tmp/sysroots/intel-aero/c++/5.3.0/x86_64-poky-linux
+#)
 
 # Add library
 INCLUDE_DIRECTORIES(
-SYSTEM
-include
-src
+  
+  SYSTEM
+  include
+  src
 )
 ADD_LIBRARY(${PROJECT_NAME} SHARED ${SOURCES})
 
-  MESSAGE("Building Fast Test")
+MESSAGE("Building Fast Test")
 FIND_PACKAGE(OpenCV REQUIRED)
 FIND_PACKAGE(Boost REQUIRED COMPONENTS system)
 INCLUDE_DIRECTORIES(
