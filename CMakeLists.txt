@@ -39,7 +39,7 @@ ELSE()
 ENDIF()
 
 # Add library
-INCLUDE_DIRECTORIES(include src)
+INCLUDE_DIRECTORIES(SYSTEM include src)
 ADD_LIBRARY(${PROJECT_NAME} SHARED ${SOURCES})
 
 # Add Tests
